@@ -2,7 +2,7 @@ package recognizer
 
 import (
 	"fmt"
-	"fulfillment/matcher"
+	"go-chatbot/matcher"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -11,7 +11,7 @@ import (
 type Intent struct {
 	name    string
 	phrases []string
-	score   int
+	score   float64
 }
 
 func LoadIntentPhrases() []Intent {
@@ -32,19 +32,29 @@ func LoadIntentPhrases() []Intent {
 		intent.phrases = phrases
 		intents = append(intents, intent)
 	}
-	fmt.Println(intents)
-	fmt.Println("END OF LOADING FILE")
+	// fmt.Println(intents)
+	// fmt.Println("END OF LOADING FILE")
 	return intents
 }
 
 func UserIntent(userMessage string) string {
 	intents := LoadIntentPhrases()
+	var score float64
+	intentName := "Fallback"
 
 	for _, intent := range intents {
 		for _, phrase := range intent.phrases {
-			intent.score += matcher.Distance(userMessage, phrase)
+			intent.score += float64(matcher.Distance(userMessage, phrase))
 		}
-		fmt.Println(intent.name, intent.score)
+		intent.score = float64(len(intent.phrases)) / intent.score
+		// fmt.Println(intent.name, intent.score)
+		if intent.score > score {
+			score = intent.score
+			intentName = intent.name
+		}
 	}
-	return "Fallback"
+	if score < 0.1 {
+		return "Fallback"
+	}
+	return intentName
 }

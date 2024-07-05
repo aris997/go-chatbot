@@ -2,18 +2,21 @@ package main
 
 import (
 	"fmt"
-	"fulfillment/actions"
-	"fulfillment/recognizer"
-
-	"os"
+	"go-chatbot/actions"
+	"go-chatbot/recognizer"
 )
 
 func main() {
-	if len(os.Args) == 0 {
-		fmt.Println("Bye.")
-	}
+	var userMessage string
+	for {
+		userMessage = ""
+		fmt.Print("YOU: ")
+		fmt.Scanf("%v", &userMessage)
+		if userMessage == "exit" {
+			return
+		}
+		intentName := recognizer.UserIntent(userMessage)
+		fmt.Println("GoBOT: ", actions.Dispatcher(intentName))
 
-	userMessage := os.Args[1]
-	intentName := recognizer.UserIntent(userMessage)
-	fmt.Println(actions.Dispatcher(intentName))
+	}
 }

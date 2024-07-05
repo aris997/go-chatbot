@@ -1,4 +1,4 @@
-module fulfillment
+module go-chatbot
 
 go 1.22
 
